@@ -1,6 +1,6 @@
 # uv Cheat Sheet
 
-This [`cheat sheet`]('https://ricketyrick.github.io/uv_cheat_sheet/uv-cheat-sheet.html) provides a concise overview of the [`uv`](https://github.com/astral-sh/uv) Python packaging tool for developers.
+This [`cheat sheet`](https://ricketyrick.github.io/uv_cheat_sheet/uv-cheat-sheet.html) provides a concise overview of the [`uv`](https://github.com/astral-sh/uv) Python packaging tool for developers.
 
 ## What's Included
 
