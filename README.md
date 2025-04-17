@@ -1,6 +1,6 @@
 # uv Cheat Sheet
 
-This cheat sheet provides a concise overview of the [`uv`](https://github.com/astral-sh/uv) Python packaging tool for experienced developers.
+This [`cheat sheet`]('https://ricketyrick.github.io/uv_cheat_sheet/uv-cheat-sheet.html) provides a concise overview of the [`uv`](https://github.com/astral-sh/uv) Python packaging tool for developers.
 
 ## What's Included
 
@@ -12,7 +12,6 @@ This cheat sheet provides a concise overview of the [`uv`](https://github.com/as
 - Managing optional dependency groups (e.g., `dev`, `prod`)
 - Running commands in virtual environments with `uv run`
 - Using `uv tool run` for ephemeral tooling environments
-- Notes on Docker integration
 
 ## Audience
 
