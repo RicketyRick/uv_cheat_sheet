@@ -2,66 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>uv Cheat Sheet</title>
+  <title>Enhanced uv Cheat Sheet</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; color: #333; }
     h1, h2 { color: #2c3e50; }
-    code { background: #eaeaea; padding: 2px 4px; border-radius: 4px; }
+    code { background: #eaeaea; padding: 2px 4px; border-radius: 4px; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; }
     pre { background: #eaeaea; padding: 1em; border-radius: 4px; overflow-x: auto; }
     ul { list-style: none; padding-left: 0; }
     li { margin-bottom: 0.5em; }
     .section { margin-bottom: 2em; }
+    .note { font-style: italic; color: #555; margin-top: 0.5em; }
+    .command-desc { margin-left: 1em; color: #444; }
   </style>
 </head>
 <body>
-  <h1>uv Cheat Sheet</h1>
+  <h1>Enhanced uv Cheat Sheet</h1>
+  <p>A comprehensive guide to using `uv`, the fast Python package installer and resolver.</p>
 
   <div class="section">
     <h2>Installation</h2>
     <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+    <p class="command-desc">Installs the latest version of uv.</p>
   </div>
 
   <div class="section">
-    <h2>Python Installation</h2>
-    <pre><code>uv python install 3.12</code></pre>
-  </div>
-
-  <div class="section">
-    <h2>Virtual Environment</h2>
-    <pre><code>uv venv .venv
-source .venv/bin/activate</code></pre>
-  </div>
-
-  <div class="section">
-    <h2>Dependency Management</h2>
+    <h2>Python Installation & Management</h2>
     <ul>
-      <li><code>uv pip install &lt;package&gt;</code> – Install a package</li>
-      <li><code>uv pip uninstall &lt;package&gt;</code> – Uninstall a package</li>
-      <li><code>uv pip list</code> – List installed packages</li>
-      <li><code>uv lock</code> – Generate/update <code>uv.lock</code></li>
-      <li><code>uv sync</code> – Sync environment with <code>pyproject.toml</code> and <code>uv.lock</code></li>
+      <li><code>uv python install &lt;version&gt;</code> <span class="command-desc">– Install a specific Python version (e.g., <code>3.11</code>, <code>3.12.1</code>, <code>pypy-3.10</code>).</span></li>
+      <li><code>uv python list</code> <span class="command-desc">– List available Python versions that can be installed by uv.</span></li>
+      <li><code>uv python pin &lt;version&gt;</code> <span class="command-desc">– Pin a specific installed Python version for the current project (creates <code>.python-version</code>).</span></li>
+    </ul>
+     <p class="note"><code>uv</code> uses standalone Python builds, managed independently from system Python.</p>
+  </div>
+
+  <div class="section">
+    <h2>Virtual Environments</h2>
+    <ul>
+      <li><code>uv venv [.venv] [--python &lt;version_or_path&gt;]</code> <span class="command-desc">– Create a virtual environment (defaults to <code>.venv</code>). Optionally specify a Python version (e.g., <code>3.12</code>) or path.</span></li>
+      <li><code>source .venv/bin/activate</code> <span class="command-desc">– Activate the virtual environment (Linux/macOS).</span></li>
+      <li><code>.venv\Scripts\activate</code> <span class="command-desc">– Activate the virtual environment (Windows).</span></li>
+      <li><code>deactivate</code> <span class="command-desc">– Deactivate the current virtual environment.</span></li>
+    </ul>
+    <p class="note">If a virtual environment (like <code>.venv</code>) exists and is activated, <code>uv</code> commands will typically use it automatically.</p>
+  </div>
+
+  <div class="section">
+    <h2>Dependency & Project Management</h2>
+    <p class="note"><code>uv</code> distinguishes between simply installing packages (like <code>pip install</code>) and managing dependencies listed in <code>pyproject.toml</code>.</p>
+    <ul>
+      <li><strong>Adding/Removing from Project:</strong></li>
+      <li><code>uv add &lt;package&gt; [--group &lt;name&gt;]</code> <span class="command-desc">– Add a package to <code>pyproject.toml</code> and install it. Use <code>--group</code> for optional dependencies (e.g., <code>dev</code>, <code>test</code>).</span></li>
+      <li><code>uv remove &lt;package&gt; [--group &lt;name&gt;]</code> <span class="command-desc">– Remove a package from <code>pyproject.toml</code> and uninstall it.</span></li>
+
+      <li><strong>Direct Installation/Uninstallation (pip compatibility):</strong></li>
+      <li><code>uv pip install &lt;package&gt; [...]</code> <span class="command-desc">– Install packages directly into the environment without modifying <code>pyproject.toml</code>. Accepts most <code>pip install</code> arguments.</span></li>
+       <li><code>uv pip install -r requirements.txt</code> <span class="command-desc">– Install packages from a requirements file.</span></li>
+       <li><code>uv pip install .</code> <span class="command-desc">– Install the current project (from <code>pyproject.toml</code>) into the environment.</span></li>
+       <li><code>uv pip install -e .</code> <span class="command-desc">– Install the current project in editable mode.</span></li>
+      <li><code>uv pip uninstall &lt;package&gt; [...]</code> <span class="command-desc">– Uninstall packages directly from the environment.</span></li>
+      <li><code>uv pip sync [--group &lt;name&gt;] [-r requirements.txt]</code> <span class="command-desc">– Synchronize the environment to match lockfiles (<code>uv.lock</code>, <code>requirements.lock</code>) or requirements files. Removes unlisted packages. Use <code>--group</code> to sync specific optional groups.</span></li>
+      <li><code>uv pip list</code> <span class="command-desc">– List installed packages in the environment.</span></li>
+      <li><code>uv pip freeze</code> <span class="command-desc">– Output installed packages in requirements format (like <code>pip freeze</code>).</span></li>
+      <li><code>uv pip check</code> <span class="command-desc">– Verify installed packages have compatible dependencies.</span></li>
+      <li><code>uv pip show &lt;package&gt;</code> <span class="command-desc">– Show details about an installed package.</span></li>
+      <li><code>uv pip install --upgrade &lt;package&gt;</code> <span class="command-desc">– Upgrade a specific package.</span></li>
+
+      <li><strong>Locking:</strong></li>
+      <li><code>uv lock [--exclude-newer &lt;YYYY-MM-DD>]</code> <span class="command-desc">– Generate/update <code>uv.lock</code> based on <code>pyproject.toml</code>. Optionally exclude packages published after a certain date.</span></li>
     </ul>
   </div>
 
-  <div class="section">
+   <div class="section">
     <h2>Running Commands</h2>
-    <pre><code>uv run python manage.py runserver</code></pre>
-  </div>
-
-  <div class="section">
-    <h2>Managing Dependency Groups</h2>
     <ul>
-      <li><code>uv pip install &lt;package&gt; --group dev</code> – Add to dev group</li>
-      <li><code>uv pip install &lt;package&gt; --group prod</code> – Add to prod group</li>
-      <li><code>uv sync --group dev</code> – Sync dev dependencies</li>
+     <li><code>uv run &lt;command&gt; [args...]</code> <span class="command-desc">– Run a command within the project's managed environment (activates automatically).</span></li>
+     <li><pre><code>uv run python manage.py runserver</code></pre></li>
+     <li><code>uv run pytest</code></li>
     </ul>
+     <p class="note"><code>uv run</code> ensures the command executes with the correct Python interpreter and dependencies available on <code>PATH</code>.</p>
   </div>
 
   <div class="section">
-    <h2>Disposable Environments</h2>
-    <pre><code>uv tool run &lt;tool&gt;</code></pre>
-    <p>Example:</p>
-    <pre><code>uv tool run black .</code></pre>
+    <h2>Disposable Environments / Running Tools</h2>
+    <ul>
+     <li><code>uv tool install &lt;tool&gt; [...]</code> <span class="command-desc">– Install a tool into uv's shared tool cache.</span></li>
+     <li><code>uv tool run &lt;tool&gt; [args...]</code> <span class="command-desc">– Run a tool (like <code>black</code>, <code>ruff</code>, <code>mypy</code>) in an isolated, temporary environment. Installs the tool if not already cached.</span></li>
+     <li><pre><code>uv tool run black .</code></pre></li>
+     <li><pre><code>uv tool run ruff check .</code></pre></li>
+     <li><code>uv tool list</code> <span class="command-desc">– List tools installed in the cache.</span></li>
+     <li><code>uv tool uninstall &lt;tool&gt;</code> <span class="command-desc">– Remove a tool from the cache.</span></li>
+    </ul>
+    <p class="note">This is ideal for running linters, formatters, etc., without polluting your project's dependencies.</p>
+  </div>
+
+  <div class="section">
+    <h2>Cache Management</h2>
+     <ul>
+      <li><code>uv cache clean</code> <span class="command-desc">– Clear uv's global cache (downloaded packages, builds, etc.).</span></li>
+      <li><code>uv cache dir</code> <span class="command-desc">– Show the location of the cache directory.</span></li>
+     </ul>
+  </div>
+
+  <div class="section">
+      <h2>Key Differences & Notes</h2>
+      <ul>
+          <li><strong>Speed:</strong> <code>uv</code> is significantly faster than <code>pip</code> + <code>venv</code> due to its Rust implementation and advanced caching/resolving.</li>
+          <li><strong><code>uv add</code> vs <code>uv pip install</code>:</strong> Use <code>uv add</code> to modify your project's declared dependencies (in <code>pyproject.toml</code>). Use <code>uv pip install</code> for direct, one-off installations into the environment (like traditional <code>pip</code> usage or installing from requirements files).</li>
+          <li><strong><code>uv sync</code>:</strong> Ensures the environment strictly matches the lockfile or requirements, removing extraneous packages. Use this for reproducible environments.</li>
+          <li><strong>Project Awareness:</strong> <code>uv</code> often automatically detects the project root (where <code>pyproject.toml</code> or <code>.git</code> resides) and the associated virtual environment (<code>.venv</code>).</li>
+      </ul>
   </div>
 
 </body>
