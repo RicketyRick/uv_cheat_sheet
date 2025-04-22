@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poetry vs uv Command Cheat Sheet</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #e9e9e9;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e6f7ff;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .note code {
+          font-size: 1em; /* Ensure code in notes isn't smaller */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Poetry vs. uv Command Cheat Sheet</h1>
+
+    <p>
+        This cheat sheet helps you translate common <a href="https://python-poetry.org/" target="_blank" rel="noopener noreferrer">Poetry</a> commands to their equivalents in <a href="https://github.com/astral-sh/uv" target="_blank" rel="noopener noreferrer"><code>uv</code></a>.
+        While <code>uv</code> aims to be a super-fast replacement for tools like <code>pip</code>, <code>pip-tools</code>, and <code>virtualenv</code>, its scope and workflow can differ from Poetry's integrated project management. Keep in mind that <code>uv</code> often focuses on environment and dependency management, potentially requiring manual edits to <code>pyproject.toml</code> where Poetry might automate them.
+    </p>
+
+    <h2>Command Comparison</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Poetry Command</th>
+                <th><code>uv</code> Command</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Initialize Project</td>
+                <td><code>poetry init</code></td>
+                <td><code>uv init</code></td>
+                <td class="note">Both create a basic <code>pyproject.toml</code>. Poetry's command is more interactive by default.</td>
+            </tr>
+            <tr>
+                <td>Add Dependency</td>
+                <td><code>poetry add &lt;package&gt;</code></td>
+                <td><code>uv pip install &lt;package&gt;</code></td>
+                <td class="note">Installs the package into the venv. <strong>Crucially, you must manually add the dependency</strong> to your <code>pyproject.toml</code> under <code>[project.dependencies]</code>. Afterwards, run <code>uv pip compile pyproject.toml -o requirements.lock</code> (or similar) to update the lock file.</td>
+            </tr>
+            <tr>
+                <td>Add Dev Dependency</td>
+                <td><code>poetry add &lt;package&gt; --group dev</code></td>
+                <td><code>uv pip install &lt;package&gt;</code></td>
+                <td class="note">Installs the package. You must manually add it to <code>pyproject.toml</code>, often under a specific optional group like <code>[project.optional-dependencies.dev]</code>. Then update the lock file.</td>
+            </tr>
+            <tr>
+                <td>Remove Dependency</td>
+                <td><code>poetry remove &lt;package&gt;</code></td>
+                <td><code>uv pip uninstall &lt;package&gt;</code></td>
+                <td class="note">Uninstalls the package. <strong>You must manually remove the dependency</strong> from your <code>pyproject.toml</code>. Then update the lock file.</td>
+            </tr>
+             <tr>
+                <td>Install from Lockfile</td>
+                <td><code>poetry install</code></td>
+                <td><code>uv pip sync requirements.lock</code></td>
+                <td class="note">Installs dependencies exactly as specified in the lock file (<code>poetry.lock</code> for Poetry, often <code>requirements.lock</code> or <code>uv.lock</code> for uv). Assumes lock file is generated via <code>uv pip compile</code>.</td>
+            </tr>
+            <tr>
+                <td>Install Excluding Dev</td>
+                <td><code>poetry install --without dev</code><br>(or <code>--no-dev</code> pre-1.5)</td>
+                <td><code>uv pip sync requirements.lock --no-deps --exclude-editable</code><br>(Or structure <code>pyproject.toml</code> with optional dev dependencies and compile different lock files if needed)</td>
+                <td class="note"><code>uv sync</code> doesn't have a direct equivalent to Poetry's groups *during sync*. You might need separate lock files (e.g., <code>requirements.lock</code>, <code>requirements-dev.lock</code>) generated by <code>uv pip compile</code> with different options (e.g., <code>--all-extras</code> for dev).</td>
+            </tr>
+             <tr>
+                <td>Update Lockfile</td>
+                <td><code>poetry lock</code></td>
+                <td><code>uv pip compile pyproject.toml -o requirements.lock</code></td>
+                <td class="note">Generates/updates the lock file based on <code>pyproject.toml</code> constraints without installing. Poetry uses <code>poetry.lock</code>, common convention for <code>uv</code> is <code>requirements.lock</code> or <code>uv.lock</code>.</td>
+            </tr>
+             <tr>
+                <td>Update All Dependencies</td>
+                <td><code>poetry update</code></td>
+                <td><code>uv pip compile pyproject.toml --upgrade -o requirements.lock && uv pip sync requirements.lock</code></td>
+                <td class="note">This updates the lock file to the latest allowed versions based on <code>pyproject.toml</code> and then installs/syncs the environment.</td>
+            </tr>
+             <tr>
+                <td>Update Specific Dependency</td>
+                <td><code>poetry update &lt;package&gt;</code></td>
+                <td><code>uv pip compile pyproject.toml --upgrade-package &lt;package&gt; -o requirements.lock && uv pip sync requirements.lock</code></td>
+                 <td class="note">Updates the specified package (and its dependencies) in the lock file to the latest allowed version and then syncs the environment.</td>
+            </tr>
+            <tr>
+                <td>Run Command in Venv</td>
+                <td><code>poetry run &lt;command&gt;</code></td>
+                <td><code>uv run &lt;command&gt;</code></td>
+                <td class="note">Executes a command within the project's virtual environment.</td>
+            </tr>
+             <tr>
+                <td>Show Venv Path</td>
+                <td><code>poetry env info --path</code></td>
+                <td><code>uv venv</code><br>(when creating/activating)</td>
+                <td class="note"><code>uv venv</code> primarily creates or specifies the venv path. Usually, the path is simply <code>.venv</code> in the project root. You can also use <code>uv run python -c "import sys; print(sys.prefix)"</code>.</td>
+            </tr>
+            <tr>
+                <td>Remove Venv</td>
+                <td><code>poetry env remove &lt;python_version&gt;</code><br>(or <code>poetry env remove /path/to/python</code>)</td>
+                <td><code>rm -rf .venv</code></td>
+                <td class="note"><code>uv</code> doesn't manage named environments like Poetry. You typically just delete the <code>.venv</code> directory manually.</td>
+            </tr>
+             <tr>
+                <td>Show Dependency Tree</td>
+                <td><code>poetry show --tree</code></td>
+                <td><code>uv pip tree</code></td>
+                <td class="note">Displays installed packages and their dependencies as a tree.</td>
+            </tr>
+             <tr>
+                <td>Show Installed Packages</td>
+                <td><code>poetry show</code></td>
+                <td><code>uv pip list</code></td>
+                <td class="note">Lists installed packages and their versions. <code>uv pip freeze</code> provides output similar to <code>pip freeze</code>.</td>
+            </tr>
+            <tr>
+                <td>Build Package</td>
+                <td><code>poetry build</code></td>
+                <td><code>python -m build</code></td>
+                <td class="note"><code>uv</code> focuses on installation/environment and doesn't include a build frontend itself. It relies on the standard Python <code>build</code> package. Ensure <code>build</code> is installed (<code>uv pip install build</code>).</td>
+            </tr>
+            <tr>
+                <td>Publish Package</td>
+                <td><code>poetry publish</code></td>
+                <td><code>twine upload dist/*</code></td>
+                <td class="note">Like building, publishing is handled by standard tools like <code>twine</code> after building the distributions (wheels/sdists) into the <code>dist/</code> directory. Ensure <code>twine</code> is installed (<code>uv pip install twine</code>).</td>
+            </tr>
+             <tr>
+                <td>Check Project Metadata</td>
+                <td><code>poetry check</code></td>
+                <td>(No direct equivalent)</td>
+                <td class="note"><code>uv</code> doesn't have a built-in command to validate <code>pyproject.toml</code> content like Poetry does. You might use external linters.</td>
+            </tr>
+             <tr>
+                <td>Activate Venv Shell</td>
+                <td><code>poetry shell</code></td>
+                <td><code>source .venv/bin/activate</code> (Linux/macOS)<br><code>.venv\Scripts\activate</code> (Windows)</td>
+                <td class="note"><code>uv</code> doesn't provide a dedicated shell command; you use the standard virtual environment activation scripts.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Key Differences Summary</h2>
+    <ul>
+        <li><strong><code>pyproject.toml</code> Management:</strong> Poetry automatically modifies <code>pyproject.toml</code> when adding/removing dependencies. With <code>uv</code>, you typically edit <code>pyproject.toml</code> manually and then use <code>uv pip install</code> or <code>uv pip compile</code>.</li>
+        <li><strong>Lock Files:</strong> Poetry uses <code>poetry.lock</code>. <code>uv pip compile</code> commonly outputs to <code>requirements.lock</code> or <code>uv.lock</code>, but is configurable.</li>
+        <li><strong>Scope:</strong> Poetry is an all-in-one project and dependency manager (including build/publish helpers). <code>uv</code> is primarily focused on being an extremely fast replacement for <code>pip</code>, <code>pip-tools</code>, and <code>virtualenv</code>/<code>venv</code>.</li>
+        <li><strong>Workflow:</strong> The typical <code>uv</code> workflow involves: manual <code>pyproject.toml</code> editing -> <code>uv pip compile</code> (to update lock file) -> <code>uv pip sync</code> (to install from lock file).</li>
+    </ul>
+
+</body>
+</html>
