@@ -1,7 +1,9 @@
 # uv Cheat Sheet
 
 This [`cheat sheet`](https://ricketyrick.github.io/uv_cheat_sheet/uv-cheat-sheet.html) provides a concise overview of the [`uv`](https://github.com/astral-sh/uv) Python packaging tool for developers.
-[`cheat sheet`](https://ricketyrick.github.io/uv_cheat_sheet/poetry_vs_uv.html) compares poetry to uv.
+
+[`Poetry vs UV`](https://ricketyrick.github.io/uv_cheat_sheet/poetry_vs_uv.html) compares poetry to uv.
+
 ## What's Included
 
 - Fast installation instructions
