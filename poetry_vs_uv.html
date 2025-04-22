@@ -189,10 +189,8 @@
 
     <h2>Key Differences Summary</h2>
     <ul>
-        <li><strong><code>pyproject.toml</code> Management:</strong> Poetry automatically modifies <code>pyproject.toml</code> when adding/removing dependencies. With <code>uv</code>, you typically edit <code>pyproject.toml</code> manually and then use <code>uv pip install</code> or <code>uv pip compile</code>.</li>
         <li><strong>Lock Files:</strong> Poetry uses <code>poetry.lock</code>. <code>uv pip compile</code> commonly outputs to <code>requirements.lock</code> or <code>uv.lock</code>, but is configurable.</li>
         <li><strong>Scope:</strong> Poetry is an all-in-one project and dependency manager (including build/publish helpers). <code>uv</code> is primarily focused on being an extremely fast replacement for <code>pip</code>, <code>pip-tools</code>, and <code>virtualenv</code>/<code>venv</code>.</li>
-        <li><strong>Workflow:</strong> The typical <code>uv</code> workflow involves: manual <code>pyproject.toml</code> editing -> <code>uv pip compile</code> (to update lock file) -> <code>uv pip sync</code> (to install from lock file).</li>
     </ul>
 
 </body>
